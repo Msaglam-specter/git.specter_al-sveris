@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>SPECTER</title>
+    <link rel="stylesheet" href="site.css">
+</head>
+<body>
+    <header>
+        <h1 style="text-align:center;font-size: 100px;color: black;">SPECTER</h1>
+       
+    </header>
+
+    <main>
+        <h3>Hoş Geldiniz</h3>
+        <p>En yeni moda ürünleri burada bulabilirsiniz.</p>
+
+         <h1>Ürünler</h1>
+            <div class="urunler" id="urunler-listesi">
+                <!-- Ürünler buraya dinamik olarak gelecek -->
+            </div>
+    </main>
+    
+        <div id="sepet">
+           <h2>Sepetim</h2>
+           <ul id="sepet-urunler"></ul>
+            
+        <p>Toplam: <span id="sepet-toplam">0 TL</span></p>
+        <button onclick="sepetiBosalt()">Sepeti Boşalt</button>
+        <button onclick="satinAl()">Satın Al</button>
+        </div>
+    <footer>
+    
+         <nav>
+            <ul>
+               <a href="index.html">Anasayfa</a>
+                <a href="hakkimizda.html">Hakkımızda</a>
+                <a href="iletisim.html">İletişim</a>
+                <a href="sepet/sepet.html">Sepetim</a>
+            </ul>
+        </nav>
+        <p>&copy; 2025 SPECTER. Tüm Hakları Saklıdır.</p>
+    
+    </footer>
+    <script src="site.js"></script>
+    <div id="bildirim" style="display:none;position:fixed;top:20px;right:20px;background:#4caf50;color:#fff;padding:10px 20px;border-radius:5px;z-index:9999;"></div>
+   
+</body>
+</html>

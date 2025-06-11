@@ -1,0 +1,154 @@
+  body { background: white ;font-family: Arial, sans-serif; }
+        .urunler { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+        .urun {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            width: 260px;
+            padding: 20px 16px 24px 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: box-shadow 0.3s, transform 0.3s;
+            position: relative;
+        }
+        .urun:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+            transform: translateY(-4px) scale(1.03);
+        }
+        .urun-img-wrap {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .urun img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .urun:hover img {
+            transform: scale(1.08);
+        }
+        .urun h2 {
+            font-size: 1.1em;
+            margin: 10px 0 8px;
+            color: #222;
+            font-weight: bold;
+            min-height: 48px;
+        }
+        .urun strong {
+            color: #e60012;
+            font-size: 1.25em;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .sepet-btn, .detay-btn, .kapat-btn {
+            background: #e60012;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.2s;
+        }
+        .sepet-btn:hover, .detay-btn:hover, .kapat-btn:hover {
+            background: #b8000d;
+        }
+        .detay {
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-size: 0.98em;
+        }
+        .sepet-link {
+            background: #e60012;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1em;
+            transition: background 0.2s;
+            float: right;
+            margin: 16px;
+            font-weight: bold;
+        }
+        .sepet-link:hover {
+            background: #b8000d;
+        }
+        
+        .footer-menu {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+.footer-menu li a {
+    color: #222;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: #f5f5f5;
+    text-align: center;
+    padding-top: 10px;
+    z-index: 100;
+    border-top: 1px solid #ddd;
+}
+#sepet {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 270px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 18px 16px 12px 16px;
+    z-index: 1000;
+}
+
+#sepet h2 {
+    margin-top: 0;
+    font-size: 22px;
+    text-align: center;
+}
+
+#sepet ul {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-left: 18px;
+}
+
+#sepet button {
+    margin: 6px 4px 0 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+    background: #222;
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#sepet button:hover {
+    background: #444;
+}

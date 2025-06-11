@@ -1,0 +1,8 @@
+body { background: #f5f5f5; font-family: Arial, sans-serif; }
+        .sepet { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);}
+        .sepet-urun { display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #eee; padding: 12px 0; }
+        .sepet-urun img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
+        .sepet-urun h2 { font-size: 1.1em; margin: 0; }
+        .sepet-urun strong { color: #e60012; font-size: 1.1em; }
+        .bos { color: #888; text-align: center; margin: 32px 0; 
+        }
