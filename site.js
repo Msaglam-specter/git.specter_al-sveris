@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Basit bir ürün kartı oluştur
                     const urunKarti = `
+                        ${produck.kategori ? `<p>Kategori: ${produck.kategori}</p>` : ''}
                         <div class="urun-karti" data-id="${produckId}">
                             <img src="${produck.resim || 'placeholder.jpg'}" alt="${produck.isim || 'Ürün Resmi'}" style="width:100%; max-width:200px; height:auto; aspect-ratio: 1/1; object-fit: cover;">
                             <h3>${produck.isim || 'İsimsiz Ürün'}</h3>
@@ -123,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const yeniSiparis = {
             sepet: sepet, // Global sepet dizisini kullan
             tarih: firebase.firestore.FieldValue.serverTimestamp(),
-            adres: adres || "Adres belirtilmedi" // Boş adres durumunda
+            adres: adres || "Adres belirtilmedi", // Boş adres durumunda
+            durum: "Bekliyor" // Yeni siparişler için varsayılan durum
         };
 
         db.collection("orders").add(yeniSiparis)
