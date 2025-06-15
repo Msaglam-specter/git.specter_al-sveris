@@ -1,13 +1,56 @@
+let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
+
+// Bildirim gösterme fonksiyonu (Global)
+function bildirimGoster(mesaj) {
+    const bildirim = document.getElementById('bildirim');
+    if (bildirim) {
+        bildirim.textContent = mesaj;
+        bildirim.style.display = 'block';
+        setTimeout(() => {
+            bildirim.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Sepeti HTML'de ve localStorage'da güncelleyen fonksiyon (Global)
+function sepetiGuncelle() {
+    const sepetList = document.getElementById('sepet-urunler');
+    const toplamSpan = document.getElementById('sepet-toplam');
+
+    if (!sepetList || !toplamSpan) {
+        // DOM elementleri henüz yüklenmemiş olabilir.
+        return;
+    }
+
+    sepetList.innerHTML = '';
+    let toplamFiyat = 0;
+
+    sepet.forEach((urun, index) => {
+        const li = document.createElement('li');
+        // Fiyatın sayı olduğundan emin olalım
+        const fiyatSayisal = parseFloat(urun.fiyat);
+
+        li.innerHTML = `
+            ${urun.ad} - ${fiyatSayisal.toLocaleString('tr-TR')} TL 
+            <button onclick="adetAzalt(${index})">-</button>
+            <span style="margin:0 5px;">${urun.adet}</span>
+            <button onclick="adetArttir(${index})">+</button>
+        `;
+        sepetList.appendChild(li);
+        if (!isNaN(fiyatSayisal)) {
+            toplamFiyat += fiyatSayisal * urun.adet;
+        }
+    });
+
+    toplamSpan.textContent = toplamFiyat.toLocaleString('tr-TR') + ' TL';
+    localStorage.setItem('sepet', JSON.stringify(sepet));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const db = firebase.firestore();
     const urunlerListesi = document.getElementById('urunler-listesi');
-    const sepetUrunlerListesi = document.getElementById('sepet-urunler');
-    const sepetToplamElementi = document.getElementById('sepet-toplam');
-    const bildirimElementi = document.getElementById('bildirim');
+    sepetiGuncelle(); // Sayfa yüklendiğinde sepeti ilk kez güncelle
 
-    let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
-
-    // Ürünleri Firestore'dan çek ve listele
     if (urunlerListesi) {
         db.collection("producks").orderBy("createdAt", "desc").get()
             .then((querySnapshot) => {
@@ -29,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p>Stok: ${produck.stok !== undefined ? produck.stok : '-'}</p>
                             ${produck.beden ? `<p>Beden: ${produck.beden}</p>` : ''}
                             ${produck.renk ? `<p>Renk: ${produck.renk}</p>` : ''}
-                            <button class="sepete-ekle-btn" data-id="${produckId}" data-isim="${produck.isim}" data-fiyat="${produck.fiyat}">Sepete Ekle</button>
+                            <button class="sepete-ekle-btn" data-id="${produckId}" data-isim="${produck.isim}" data-fiyat="${produck.fiyat}" data-resim="${produck.resim || 'placeholder.jpg'}">Sepete Ekle</button>
                         </div>
                     `;
                     urunlerListesi.innerHTML += urunKarti;
@@ -41,7 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const id = this.dataset.id;
                         const isim = this.dataset.isim;
                         const fiyat = parseFloat(this.dataset.fiyat);
-                        sepeteEkle({ id, ad: isim, fiyat, adet: 1 }); // Ürün adını 'ad' olarak gönderiyoruz
+                        const resim = this.dataset.resim; // Resim bilgisini de alalım
+                        urunSepeteEkle({ id, ad: isim, fiyat, resim, adet: 1 });
                     });
                 });
             })
@@ -51,121 +95,66 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Sepet fonksiyonları (bunlar sizin mevcut sepet mantığınıza göre uyarlanabilir)
-    function sepeteEkle(urun) {
+    // Ürün kartlarından sepete ekleme fonksiyonu (DOMContentLoaded içinde tanımlı)
+    function urunSepeteEkle(urun) {
         const mevcutUrunIndex = sepet.findIndex(item => item.id === urun.id);
         if (mevcutUrunIndex > -1) {
             sepet[mevcutUrunIndex].adet++;
         } else {
             sepet.push(urun);
         }
-        localStorage.setItem('sepet', JSON.stringify(sepet));
-        gosterBildirim(`${urun.ad} sepete eklendi!`);
-        // Sepeti güncelleme fonksiyonunu çağırabilirsiniz (eğer varsa)
-        // sepetiGuncelle(); 
+        bildirimGoster(`${urun.ad} sepete eklendi!`);
+        sepetiGuncelle(); // Sepet görünümünü ve localStorage'ı güncelle
     }
 
-    function gosterBildirim(mesaj) {
-        if (bildirimElementi) {
-            bildirimElementi.textContent = mesaj;
-            bildirimElementi.style.display = 'block';
-            setTimeout(() => {
-                bildirimElementi.style.display = 'none';
-            }, 3000);
+    // HTML'deki onclick="satinAl()" butonunun çalışması için global yapıyoruz
+    window.satinAl = function() {
+        if (sepet.length === 0) {
+            bildirimGoster('Sepetiniz boş!');
+            return;
         }
-    }
-    // Diğer sepet fonksiyonları (sepetiBosalt, satinAl, sepetiGuncelle vb.) buraya gelebilir.
+
+        const adres = prompt("Lütfen teslimat adresinizi giriniz:", "Örnek Mah. Test Sok. No:1 Daire:2 İlçe/İl");
+        if (adres === null) { // Kullanıcı iptal ederse
+            bildirimGoster("Sipariş iptal edildi.");
+            return;
+        }
+
+        const yeniSiparis = {
+            sepet: sepet, // Global sepet dizisini kullan
+            tarih: firebase.firestore.FieldValue.serverTimestamp(),
+            adres: adres || "Adres belirtilmedi" // Boş adres durumunda
+        };
+
+        db.collection("orders").add(yeniSiparis)
+            .then((docRef) => {
+                bildirimGoster('Siparişiniz başarıyla alındı! Sipariş ID: ' + docRef.id);
+                sepetiBosalt(); // Sepeti temizle (global fonksiyonu çağır)
+            })
+            .catch((error) => {
+                console.error("Sipariş oluşturma hatası: ", error);
+                bildirimGoster('Sipariş oluşturulurken bir hata oluştu.');
+            });
+    };
 });
 
-function bildirimGoster(mesaj) {
-    const bildirim = document.getElementById('bildirim');
-    bildirim.textContent = mesaj;
-    bildirim.style.display = 'block';
-    setTimeout(() => {
-        bildirim.style.display = 'none';
-    }, 3000); // 3 saniye sonra kaybolur
-}
-
-function sepeteEkle(ad, fiyat, resim) {
-    let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
-    let urun = sepet.find(u => u.ad === ad && u.fiyat === fiyat && u.resim === resim);
-    if (urun) {
-        urun.adet += 1;
-    } else {
-        sepet.push({ad, fiyat, resim, adet: 1});
-    }
-    localStorage.setItem('sepet', JSON.stringify(sepet));
-    sepetiGuncelle();
-    bildirimGoster("Ürün sepete eklendi!");
-}
-
-function sepetiGuncelle() {
-    let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
-    const sepetList = document.getElementById('sepet-urunler');
-    const toplamSpan = document.getElementById('sepet-toplam');
-    sepetList.innerHTML = '';
-    let toplam = 0;
-
-    sepet.forEach((urun, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            ${urun.ad} - ${urun.fiyat} 
-            <button onclick="adetAzalt(${index})">-</button>
-            <span style="margin:0 5px;">${urun.adet}</span>
-            <button onclick="adetArttir(${index})">+</button>
-        `;
-        sepetList.appendChild(li);
-        toplam += parseInt(urun.fiyat.replace(/\D/g, '')) * urun.adet;
-    });
-
-    toplamSpan.textContent = toplam + ' TL';
-}
-
+// Bu fonksiyonlar global olmalı çünkü HTML içindeki onclick eventleri tarafından çağrılıyorlar.
 function adetAzalt(index) {
-    let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
     if (sepet[index].adet > 1) {
         sepet[index].adet -= 1;
     } else {
-        sepet.splice(index, 1);
+        sepet.splice(index, 1); // Ürün adedi 1 ise ve azaltılırsa ürünü sepetten çıkar
     }
-    localStorage.setItem('sepet', JSON.stringify(sepet));
     sepetiGuncelle();
 }
 
 function adetArttir(index) {
-    let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
     sepet[index].adet += 1;
-    localStorage.setItem('sepet', JSON.stringify(sepet));
     sepetiGuncelle();
 }
 
 function sepetiBosalt() {
-    localStorage.removeItem('sepet');
-    sepetiGuncelle();
+    sepet = []; // Global sepet dizisini boşalt
+    sepetiGuncelle(); // Değişikliği yansıt
+    bildirimGoster("Sepet boşaltıldı.");
 }
-
-function satinAl() {
-    let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
-    if (sepet.length === 0) {
-        bildirimGoster('Sepetiniz boş!');
-        return;
-    }
-
-    
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            bildirimGoster('Satın alma işlemi başarılı!');
-            sepetiBosalt();
-        } else {
-            bildirimGoster('Sipariş gönderilemedi!');
-        }
-    })
-    .catch(() => {
-        bildirimGoster('Sunucuya bağlanılamadı!');
-    });
-}
-
-window.onload = sepetiGuncelle;
-
-
