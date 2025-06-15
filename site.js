@@ -153,9 +153,9 @@ function adetArttir(index) {
     sepetiGuncelle();
 }
 
-function sepetiBosalt(bildirimyap=true
-) {
+function sepetiBosalt(bildirimyap = true) {
     sepet = []; // Global sepet dizisini boşalt
     sepetiGuncelle(); // Değişikliği yansıt
+    if (bildirimyap)
     bildirimGoster("Sepet boşaltıldı.");
 }
