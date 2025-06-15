@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         db.collection("orders").add(yeniSiparis)
             .then((docRef) => {
                 bildirimGoster('Siparişiniz başarıyla alındı! Sipariş ID: ' + docRef.id);
-                sepetiBosalt(); // Sepeti temizle (global fonksiyonu çağır)
+                sepetiBosalt(false); // Sepeti temizle (global fonksiyonu çağır)bildirim gösterme
             })
             .catch((error) => {
                 console.error("Sipariş oluşturma hatası: ", error);
@@ -153,7 +153,8 @@ function adetArttir(index) {
     sepetiGuncelle();
 }
 
-function sepetiBosalt() {
+function sepetiBosalt(bildirimyap=true
+) {
     sepet = []; // Global sepet dizisini boşalt
     sepetiGuncelle(); // Değişikliği yansıt
     bildirimGoster("Sepet boşaltıldı.");
