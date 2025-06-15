@@ -151,15 +151,7 @@ function satinAl() {
         return;
     }
 
-    // Siparişi backend'e gönder
-    fetch('http://localhost:3000/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            sepet: sepet,
-            tarih: new Date().toISOString()
-        })
-    })
+    
     .then(response => response.json())
     .then(data => {
         if (data.success) {
@@ -176,45 +168,4 @@ function satinAl() {
 
 window.onload = sepetiGuncelle;
 
-document.addEventListener('DOMContentLoaded',document.addEventListener('DOMContentLoaded', () => {
-    fetch('http://localhost:3000/api/producks')
-        .then(res => res.json())
-        .then(producks => {
-            const urunlerDiv = document.getElementById('urunler-listesi');
-            urunlerDiv.innerHTML = '';
-            producks.forEach(produck => {
-                urunlerDiv.innerHTML += `
-                    <div class="urun">
-                        <div class="urun-img-wrap">
-                            <img src="${produck.resim || 'default.jpg'}" alt="${produck.isim}">
-                        </div>
-                        <h2>${produck.isim}</h2>
-                        <strong>${produck.fiyat}</strong>
-                        <button class="sepet-btn" onclick="sepeteEkle('${produck.isim}', '${produck.fiyat}', '${produck.resim}')">Sepete Ekle</button>
-                    </div>
-                `;
-            });
-        });
-}));
-//ürünleri listele
-document.addEventListener('DOMContentLoaded', () => {
-    fetch('http://localhost:3000/api/producks')
-        .then(res => res.json())
-        .then(producks => {
-            const urunlerDiv = document.getElementById('urunler-listesi');
-            urunlerDiv.innerHTML = '';
-            producks.forEach(produck => {
-                urunlerDiv.innerHTML += `
-                    <div class="urun">
-                        <div class="urun-img-wrap">
-                            <img src="${produck.resim || 'default.jpg'}" alt="${produck.isim}">
-                        </div>
-                        <h2>${produck.isim}</h2>
-                        <strong>${produck.fiyat}</strong>
-                        <button class="sepet-btn" onclick="sepeteEkle('${produck.isim}', '${produck.fiyat}', '${produck.resim}')">Sepete Ekle</button>
-                    </div>
-                `;
-            });
-        });
-});
-// Sepet güncelleme işlemi
+
